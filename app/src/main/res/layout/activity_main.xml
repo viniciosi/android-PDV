@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/txtSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:hint="Busca"
+        android:inputType="textPersonName" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvListProdutos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/txtSearch"
+        android:layout_alignBottom="@id/btNew">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:clickable="true"
+        android:src="@android:drawable/ic_menu_add"
+        app:backgroundTint="@color/colorPrimary"
+        app:borderWidth="0.5dp"
+        app:elevation="6dp"
+        app:fabSize="mini"
+        app:hoveredFocusedTranslationZ="6dp"
+        app:maxImageSize="24dp"
+        app:pressedTranslationZ="6dp" />
+
+</RelativeLayout>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/txtSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/btVoltar"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <ImageButton
+        android:id="@+id/btVoltar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:src="@android:drawable/ic_menu_revert" />
+
+    <CheckBox
+        android:id="@+id/cbCachorro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtSearch"
+        android:layout_alignParentLeft="true"
+        android:checkable="true"
+        android:text="Cachorro" />
+
+    <CheckBox
+        android:id="@+id/cbGato"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtSearch"
+        android:layout_toRightOf="@id/cbCachorro"
+        android:checkable="true"
+        android:text="Gato" />
+
+    <CheckBox
+        android:id="@+id/cbPassaro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtSearch"
+        android:layout_toRightOf="@id/cbGato"
+        android:checkable="true"
+        android:text="Pássaro"
+        app:closeIconVisible="false" />
+
+    <CheckBox
+        android:id="@+id/cbOutros"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtSearch"
+        android:layout_toRightOf="@id/cbPassaro"
+        android:checkable="true"
+        android:text="Outros" />
+
+    <ListView
+        android:id="@+id/lvProdutos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/cbCachorro">
+
+    </ListView>
+
+</RelativeLayout>
