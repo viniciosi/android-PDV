@@ -78,6 +78,8 @@ public class TelaVenda extends AppCompatActivity {
         rvProdutos.setItemAnimator(new DefaultItemAnimator());
         rvProdutos.setAdapter(prodAdapter);
 
+        databaseHelper = new CriarBanco(this);
+
         inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         pw = new PopupWindow(inflater.inflate(R.layout.fechar_venda, null), LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
 
@@ -100,6 +102,23 @@ public class TelaVenda extends AppCompatActivity {
                 TextView tValor = ((TextView)pw.getContentView().findViewById(R.id.txtValor));
                 TextView tTroco = ((TextView)pw.getContentView().findViewById(R.id.txtTroco));
                 tTroco.setText(String.valueOf(Float.parseFloat(tValor.getText().toString()) - Float.parseFloat(tTotal.getText().toString())));
+            }
+        });
+
+        ((ImageButton)pw.getContentView().findViewById(R.id.btVoltar)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pw.dismiss();
+            }
+        });
+
+        ((ImageButton)pw.getContentView().findViewById(R.id.btFechar)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                databaseHelper.insertVenda(prodAdapter.getItemVenda());
+                prodAdapter.clear();
+                prodAdapter.notifyDataSetChanged();
+                pw.dismiss();
             }
         });
 
@@ -130,8 +149,6 @@ public class TelaVenda extends AppCompatActivity {
                 startActivityForResult(intent, 0);
             }
         });
-
-        databaseHelper = new CriarBanco(this);
 
         txtCodigo.addTextChangedListener(new TextWatcher() {
             @Override

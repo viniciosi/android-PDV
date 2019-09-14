@@ -109,6 +109,10 @@ public class ListProdutoVendaAdapter extends RecyclerView.Adapter<ListProdutoVen
         return list.size();
     }
 
+    public List<ItemVenda> getItemVenda(){return list;}
+
+    public void clear(){list.clear();}
+
     public Float getTotal(){
         Float total = Float.valueOf(0);
         for (ItemVenda item:list ) {

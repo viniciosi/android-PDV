@@ -7,10 +7,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.ContactsContract;
 
+import com.example.pdv.adapter.ListProdutoVendaAdapter;
 import com.example.pdv.model.Produto;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CriarBanco extends SQLiteOpenHelper {
@@ -31,12 +36,18 @@ public class CriarBanco extends SQLiteOpenHelper {
                 + " DESCRICAO TEXT, UNIDADE INTEGER, TIPO INTEGER, PRECO REAL)";
         sqLiteDatabase.execSQL(sql);
 
+        sql = "CREATE TABLE VENDA (ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "DATA TEXT, CODIGO_VENDA TEXT, CODIGO TEXT, QTD INTEGER, VALOR REAL)";
+        sqLiteDatabase.execSQL(sql);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS PRODUTO");
+        onCreate(sqLiteDatabase);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS VENDA");
         onCreate(sqLiteDatabase);
 
     }
@@ -52,6 +63,31 @@ public class CriarBanco extends SQLiteOpenHelper {
         long id = db.insert("PRODUTO", null, cv);
         db.close();
         return id;
+    }
+
+    public void insertVenda(List<ListProdutoVendaAdapter.ItemVenda> itemsVenda){
+
+        String codigo_venda = UUID.randomUUID().toString();
+        String data = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        for (ListProdutoVendaAdapter.ItemVenda itemVenda:
+                itemsVenda) {
+
+            ContentValues cv = new ContentValues();
+
+            cv.put("DATA", data);
+            cv.put("CODIGO_VENDA", codigo_venda);
+            cv.put("CODIGO", itemVenda.getProduto().getCODIGO());
+            cv.put("QTD", itemVenda.getQtd());
+            cv.put("VALOR", itemVenda.getPreco());
+
+            long id = db.insert("VENDA", null, cv);
+        }
+
+        db.close();
+
     }
 
     public int updateData(Produto produto){

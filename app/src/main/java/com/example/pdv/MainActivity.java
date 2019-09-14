@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         btNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, PesquisarProduto.class);
+                Intent intent = new Intent(MainActivity.this, AddProduto.class);
                 startActivity(intent);
                 finish();
             }
