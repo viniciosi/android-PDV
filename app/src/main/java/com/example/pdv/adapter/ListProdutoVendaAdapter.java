@@ -16,9 +16,14 @@ import com.example.pdv.R;
 import com.example.pdv.TelaVenda;
 import com.example.pdv.model.Produto;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ListProdutoVendaAdapter extends RecyclerView.Adapter<ListProdutoVendaAdapter.MyViewHolder> {
+
+    Locale myLocale = new Locale("pt", "BR");
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(myLocale);
 
     public static class ItemVenda{
         private Produto produto;
@@ -92,9 +97,9 @@ public class ListProdutoVendaAdapter extends RecyclerView.Adapter<ListProdutoVen
             holder.txtCodigo.setText(itemVenda.getProduto().getCODIGO());
             holder.txtDescricao.setText(itemVenda.getProduto().getDESCRICAO());
         }
-        holder.txtPreco.setText(itemVenda.getPreco().toString());
+        holder.txtPreco.setText(numberFormat.format(itemVenda.getPreco()));
         holder.txtQtd.setText(itemVenda.getQtd().toString());
-        holder.txtSubTotal.setText(((Float)(itemVenda.getPreco() * itemVenda.getQtd())).toString());
+        holder.txtSubTotal.setText(numberFormat.format ((Float)(itemVenda.getPreco() * itemVenda.getQtd())));
         holder.btDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

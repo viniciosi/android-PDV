@@ -11,10 +11,12 @@ import com.example.pdv.adapter.ListProdutoVendaAdapter;
 import com.example.pdv.model.Produto;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,8 @@ public class CriarBanco extends SQLiteOpenHelper {
     private static final int VERSAO = 1;
     private List<Produto> produtos;
 
+    Locale myLocale = new Locale("pt", "BR");
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(myLocale);
 
     public CriarBanco(Context context) {
         super(context, NOME_BANCO, null, VERSAO);
@@ -40,6 +44,10 @@ public class CriarBanco extends SQLiteOpenHelper {
                 + "DATA TEXT, CODIGO_VENDA TEXT, CODIGO TEXT, QTD INTEGER, VALOR REAL)";
         sqLiteDatabase.execSQL(sql);
 
+        sql = "CREATE TABLE COMPRA (ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "DATA TEXT, CODIGO_VENDA TEXT, CODIGO TEXT, QTD INTEGER, VALOR REAL)";
+        sqLiteDatabase.execSQL(sql);
+
     }
 
     @Override
@@ -48,6 +56,8 @@ public class CriarBanco extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS PRODUTO");
         onCreate(sqLiteDatabase);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS VENDA");
+        onCreate(sqLiteDatabase);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS COMPRA");
         onCreate(sqLiteDatabase);
 
     }
@@ -84,6 +94,31 @@ public class CriarBanco extends SQLiteOpenHelper {
             cv.put("VALOR", itemVenda.getPreco());
 
             long id = db.insert("VENDA", null, cv);
+        }
+
+        db.close();
+
+    }
+
+    public void insertCompra(List<ListProdutoVendaAdapter.ItemVenda> itemsVenda){
+
+        String codigo_venda = UUID.randomUUID().toString();
+        String data = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        for (ListProdutoVendaAdapter.ItemVenda itemVenda:
+                itemsVenda) {
+
+            ContentValues cv = new ContentValues();
+
+            cv.put("DATA", data);
+            cv.put("CODIGO_VENDA", codigo_venda);
+            cv.put("CODIGO", itemVenda.getProduto().getCODIGO());
+            cv.put("QTD", itemVenda.getQtd());
+            cv.put("VALOR", itemVenda.getPreco());
+
+            long id = db.insert("COMPRA", null, cv);
         }
 
         db.close();
@@ -182,5 +217,29 @@ public class CriarBanco extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("PRODUTO", "CODIGO = ?", new String[]{produto.getCODIGO()});
         db.close();
+    }
+
+    public ArrayList<String> getVendas(String mes){
+        ArrayList<String> ret = new ArrayList<>();
+        String query;
+
+        if (mes.isEmpty()){
+            query = "select strftime('%m/%Y', DATA), sum(VALOR * QTD) MES from VENDA group by strftime('%m/%Y', DATA)";
+        }else {
+            query = "select strftime('%d/%m/%Y', DATA), sum(VALOR * QTD) MES from VENDA where strftime('%m/%Y', DATA)='" + mes + "' group by strftime('%d/%m/%Y', DATA)";
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor != null && cursor.moveToFirst()){
+            do{
+                String mesR =cursor.getString(0);
+                Float valorVenda = cursor.getFloat(1);
+                if (mesR != null)
+                    ret.add(mesR + " - " + numberFormat.format(valorVenda));
+            } while (cursor.moveToNext());
+        }
+
+        return ret;
     }
 }

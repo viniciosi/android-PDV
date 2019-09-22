@@ -10,9 +10,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -22,7 +19,6 @@ import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -33,12 +29,10 @@ import com.example.pdv.adapter.ListProdutoVendaAdapter;
 import com.example.pdv.model.Produto;
 import com.example.pdv.model.TiposPagamentos;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-public class TelaVenda extends AppCompatActivity {
+public class TelaCompra extends AppCompatActivity {
 
     public static ListProdutoVendaAdapter prodAdapter;
     RecyclerView rvProdutos;
@@ -54,9 +48,6 @@ public class TelaVenda extends AppCompatActivity {
     LayoutInflater inflater;
 
     List<ListProdutoVendaAdapter.ItemVenda> lItemVenda;
-
-    Locale myLocale = new Locale("pt", "BR");
-    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(myLocale);
 
     public static void notifyAdapter() {
         prodAdapter.notifyDataSetChanged();
@@ -94,28 +85,15 @@ public class TelaVenda extends AppCompatActivity {
 
         ((Spinner)pw.getContentView().findViewById(R.id.spTpPagamento)).setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, new TiposPagamentos().getTipos()));
 
-        ((EditText)pw.getContentView().findViewById(R.id.txtValor)).addTextChangedListener(new TextWatcher() {
+        ((TextView)pw.getContentView().findViewById(R.id.txtValor)).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
 
-            private String current = "";
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(!charSequence.toString().equals(current)) {
-                    Locale myLocale = new Locale("pt", "BR");
-                    //Nesse bloco ele monta a maskara para money
-                    ((EditText)pw.getContentView().findViewById(R.id.txtValor)).removeTextChangedListener(this);
-                    String cleanString = charSequence.toString().replaceAll("[R$,.]", "");
-                    Float parsed = Float.parseFloat(cleanString);
-                    String formatted = NumberFormat.getCurrencyInstance(myLocale).format((parsed / 100));
-                    current = formatted;
-                    ((EditText)pw.getContentView().findViewById(R.id.txtValor)).setText(formatted);
-                    ((EditText)pw.getContentView().findViewById(R.id.txtValor)).setSelection(formatted.length());
 
-                    ((EditText)pw.getContentView().findViewById(R.id.txtValor)).addTextChangedListener(this);
-                }
             }
 
             @Override
@@ -123,7 +101,7 @@ public class TelaVenda extends AppCompatActivity {
                 TextView tTotal = ((TextView)pw.getContentView().findViewById(R.id.txtTotal));
                 TextView tValor = ((TextView)pw.getContentView().findViewById(R.id.txtValor));
                 TextView tTroco = ((TextView)pw.getContentView().findViewById(R.id.txtTroco));
-                tTroco.setText(numberFormat.format(converterPreco(tValor.getText().toString()) - converterPreco(tTotal.getText().toString())));
+                tTroco.setText(String.valueOf(Float.parseFloat(tValor.getText().toString()) - Float.parseFloat(tTotal.getText().toString())));
             }
         });
 
@@ -167,7 +145,7 @@ public class TelaVenda extends AppCompatActivity {
         btSearchProd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(TelaVenda.this, PesquisarProduto.class);
+                Intent intent = new Intent(TelaCompra.this, PesquisarProduto.class);
                 startActivityForResult(intent, 0);
             }
         });
@@ -228,7 +206,7 @@ public class TelaVenda extends AppCompatActivity {
                     if (txtQtd.getText().toString().isEmpty() || txtPreco.getText().toString().isEmpty()) {
                         txtSubTotal.setText("0");
                     }else{
-                        txtSubTotal.setText(numberFormat.format(Integer.parseInt(txtQtd.getText().toString()) * converterPreco(txtPreco.getText().toString())));
+                        txtSubTotal.setText(String.valueOf(Integer.parseInt(txtQtd.getText().toString()) * Float.parseFloat(txtPreco.getText().toString())));
                     }
                 }
             }
@@ -262,7 +240,7 @@ public class TelaVenda extends AppCompatActivity {
                     if (txtQtd.getText().toString().isEmpty() || txtPreco.getText().toString().isEmpty()) {
                         txtSubTotal.setText("0");
                     }else{
-                        txtSubTotal.setText(numberFormat.format(Integer.parseInt(txtQtd.getText().toString()) * converterPreco(txtPreco.getText().toString())));
+                        txtSubTotal.setText(String.valueOf(Integer.parseInt(txtQtd.getText().toString()) * Float.parseFloat(txtPreco.getText().toString())));
                     }
                 }
             }
@@ -295,46 +273,12 @@ public class TelaVenda extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.mainmenu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        Intent intent = null;
-        Context eu = TelaVenda.this;
-
-        switch (item.getItemId()){
-            case R.id.itemProdutos:
-                intent = new Intent(eu, MainActivity.class);
-                break;
-            case R.id.itemCompras:
-                intent = new Intent(eu, TelaCompra.class);
-                break;
-            case R.id.itemRelatorio:
-                intent = new Intent(eu, ReportAct.class);
-                break;
-            case R.id.itemBackup:
-                intent = new Intent(eu, SyncAct.class);
-                break;
-            default:
-                return false;
-        }
-        startActivity(intent);
-        //finish();
-        return true;
-    }
-
     protected void preencheItem(Produto produto){
         //txtCodigo.setText(produto.getCODIGO());
         txtProduto.setText(produto.getDESCRICAO());
-        txtPreco.setText(numberFormat.format(produto.getPRECO()));
+        txtPreco.setText(produto.getPRECO().toString());
 
-        txtSubTotal.setText(numberFormat.format((Integer.parseInt(txtQtd.getText().toString()) * produto.getPRECO())));
+        txtSubTotal.setText(String.valueOf (Integer.parseInt(txtQtd.getText().toString()) * produto.getPRECO()));
     }
 
     protected void limparItem(){
@@ -351,7 +295,7 @@ public class TelaVenda extends AppCompatActivity {
             ListProdutoVendaAdapter.ItemVenda itemVenda = new ListProdutoVendaAdapter.ItemVenda();
 
             itemVenda.setProduto(databaseHelper.getProduto(txtCodigo.getText().toString()));
-            itemVenda.setPreco(converterPreco(txtPreco.getText().toString()));
+            itemVenda.setPreco(Float.parseFloat(txtPreco.getText().toString()));
             itemVenda.setQtd(Integer.parseInt(txtQtd.getText().toString()));
 
             lItemVenda.add(itemVenda);
@@ -363,12 +307,8 @@ public class TelaVenda extends AppCompatActivity {
             txtCodigo.requestFocus();
             txtQtd.setText("1");
 
-            txtTotal.setText(numberFormat.format(prodAdapter.getTotal()));
+            txtTotal.setText(prodAdapter.getTotal().toString());
         }
 
-    }
-
-    private float converterPreco(String preco){
-        return Float.parseFloat(preco.replaceAll("[R$.]", "").replace(",", "."));
     }
 }

@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //SyncDB.backupDB(this);
+
         recyclerView = (RecyclerView) findViewById(R.id.rvListProdutos);
         databaseHelper = new CriarBanco(this);
 
